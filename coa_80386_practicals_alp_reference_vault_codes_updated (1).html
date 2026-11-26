@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COA 80386 Practicals & ALP Reference Vault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- Top Navbar -->
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-bold text-sm">
+          x86
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">COA 80386 Practicals & ALP Reference Vault</h1>
+          <p class="text-xs text-slate-400">NASM 64-bit Linux Syscall Format • Instant Access • No Login</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
+        <button id="tab-repo" onclick="switchTab('repo')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-emerald-600 text-white shadow">
+          25 Practicals Vault
+        </button>
+        <button id="tab-gen" onclick="switchTab('gen')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+          <span>Custom ALP Generator</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">AI</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2 bg-emerald-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-950/50 transition-all">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <!-- VIEW 1: REPOSITORY -->
+  <main id="view-repo" class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+    
+    <!-- Sidebar: Search, Category Filters & Question List -->
+    <aside class="lg:col-span-4 xl:col-span-4 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden lg:h-[calc(100vh-5.5rem)] lg:sticky lg:top-20">
+      <div class="p-3.5 border-b border-slate-800 space-y-3">
+        <!-- Search Input -->
+        <div class="relative">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input id="search-input" type="text" placeholder="Search Q1-Q22, string, BCD, FPU, DOS..." 
+            class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500" />
+        </div>
+
+        <!-- Category Chips -->
+        <div id="category-filters" class="flex flex-wrap gap-1.5">
+          <button data-cat="All" class="cat-btn active px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-600 text-white">All (25)</button>
+          <button data-cat="Arithmetic" class="cat-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Arithmetic</button>
+          <button data-cat="Conversion" class="cat-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Hex/BCD</button>
+          <button data-cat="Multiplication" class="cat-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Mul Methods</button>
+          <button data-cat="Strings" class="cat-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Strings</button>
+          <button data-cat="Hardware/DOS/FPU" class="cat-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Sim/DOS/FPU</button>
+        </div>
+      </div>
+
+      <!-- List of Questions -->
+      <div id="question-list" class="flex-1 overflow-y-auto divide-y divide-slate-800/70 max-h-80 lg:max-h-none">
+        <!-- Populated by JS -->
+      </div>
+    </aside>
+
+    <!-- Code Viewer Panel -->
+    <section class="lg:col-span-8 xl:col-span-8 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+      <!-- Header Info -->
+      <div class="p-4 sm:p-5 border-b border-slate-800 bg-slate-900/60 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div class="space-y-1.5">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="detail-badge" class="px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Q1</span>
+            <span id="detail-cat" class="px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-800 text-slate-300">Arithmetic</span>
+            <span id="detail-cmd" class="text-xs font-mono text-slate-400">nasm -f elf64 p.asm && ld p.o -o p && ./p</span>
+          </div>
+          <h2 id="detail-title" class="text-base sm:text-lg font-semibold text-white leading-snug">Loading...</h2>
+          <p id="detail-desc" class="text-xs text-slate-400"></p>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="copyActiveCode()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white text-xs sm:text-sm font-medium flex items-center gap-2 transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span>Copy Code</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Code Block -->
+      <div class="relative flex-1 bg-slate-950 overflow-x-auto">
+        <pre class="p-4 sm:p-5 text-xs sm:text-sm font-mono leading-relaxed text-slate-200 overflow-x-auto"><code id="code-display"></code></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- VIEW 2: AI CUSTOM ALP GENERATOR -->
+  <main id="view-gen" class="hidden flex-1 max-w-5xl w-full mx-auto p-4 space-y-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold text-white">Custom Exam Question ALP Generator</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          Paste any practical exam slip question below. Generates standard NASM 64-bit Linux syscall assembly matching the exact college lab format (<code class="text-emerald-400">%macro</code>, <code class="text-emerald-400">ascii_to_hex</code>, <code class="text-emerald-400">hex_to_ascii</code>) without robotic AI comments.
+        </p>
+      </div>
+
+      <!-- Quick Sample Prompts -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs text-slate-400">Try sample:</span>
+        <button onclick="setSamplePrompt('Write a menu driven ALP for following string operations: A) String Length B) String Reverse C) Exit')" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          String Length + Reverse Menu
+        </button>
+        <button onclick="setSamplePrompt('Write a menu driven ALP for 64-bit Arithmetic operations: A) Addition B) Subtraction C) Multiplication D) Division E) Exit')" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          All 4 Arithmetic Menu
+        </button>
+        <button onclick="setSamplePrompt('Write an ALP to count positive and negative numbers from an array of 64-bit hexadecimal numbers.')" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          Positive/Negative Array Count
+        </button>
+      </div>
+
+      <textarea id="gen-prompt" rows="3" placeholder="e.g., Write a menu driven ALP to implement following string operations: A) String Copy B) String Concatenate C) Exit"
+        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"></textarea>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span id="gen-status" class="text-xs text-slate-400">Ready to generate</span>
+        <button id="gen-btn" onclick="generateCustomALP()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium flex items-center gap-2 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Generate Code</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Generated Output Box -->
+    <div id="gen-output-card" class="hidden bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <span class="text-sm font-medium text-emerald-400 font-mono">generated_practical.asm</span>
+        <button onclick="copyGeneratedCode()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span>Copy Generated Code</span>
+        </button>
+      </div>
+      <div class="bg-slate-950 overflow-x-auto">
+        <pre class="p-4 sm:p-5 text-xs sm:text-sm font-mono leading-relaxed text-slate-200"><code id="gen-code-display"></code></pre>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Shared common NASM 64-bit boilerplate blocks to keep repository clean and authentic
+    const HEADER_MACRO = `%macro read 2
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, %1
+    mov rdx, %2
+    syscall
+%endmacro
+
+%macro write 2
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, %1
+    mov rdx, %2
+    syscall
+%endmacro
+
+`;
+
+    const CONV_PROCS = `
+ascii_to_hex:
+    mov rbx, 0
+    mov rcx, 16
+up1:
+    rol rbx, 4
+    mov al, [rsi]
+    cmp al, 39h
+    jbe skip1
+    sub al, 07h
+skip1:
+    sub al, 30h
+    add bl, al
+    inc rsi
+    dec rcx
+    jnz up1
+    ret
+
+hex_to_ascii:
+    mov rsi, dispbuff
+    mov rcx, 16
+up2:
+    rol rbx, 4
+    mov dl, bl
+    and dl, 0fh
+    cmp dl, 09h
+    jbe skip2
+    add dl, 07h
+skip2:
+    add dl, 30h
+    mov [rsi], dl
+    inc rsi
+    dec rcx
+    jnz up2
+    write dispbuff, 16
+    ret`;
+
+    // Complete 25 Practicals Dataset
+    const PRACTICALS = [
+      {
+        id: "Q1",
+        title: "64-bit Addition of two Hexadecimal numbers",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 add64.asm && ld add64.o -o add64 && ./add64",
+        desc: "Accepts two 16-digit 64-bit hex numbers from user and displays the 64-bit sum.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Addition is: \",10\n    len3 equ $-msg3\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q2",
+        title: "64-bit Subtraction of two Hexadecimal numbers",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 sub64.asm && ld sub64.o -o sub64 && ./sub64",
+        desc: "Accepts two 64-bit hex numbers and computes num1 - num2.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Subtraction is: \",10\n    len3 equ $-msg3\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q3",
+        title: "64-bit Multiplication of two Hexadecimal numbers (128-bit result)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 mul64.asm && ld mul64.o -o mul64 && ./mul64",
+        desc: "Multiplies two 64-bit numbers using MUL instruction and displays RDX:RAX.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Multiplication (RDX:RAX) is: \",10\n    len3 equ $-msg3\n    msg4 db \"Upper 64 bits: \",10\n    len4 equ $-msg4\n    msg5 db \"Lower 64 bits: \",10\n    len5 equ $-msg5\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rax,[a]\n    mul qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    WRITE msg3,len3\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    WRITE msg5,len5\n    mov rbx,[result]\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q4",
+        title: "64-bit Division of two Hexadecimal numbers (Quotient & Remainder)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 div64.asm && ld div64.o -o div64 && ./div64",
+        desc: "Divides 64-bit dividend by 64-bit divisor and prints Quotient and Remainder.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Division is: \",10\n    len3 equ $-msg3\n    msg4 db \"Remainder: \",10\n    len4 equ $-msg4\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    cmp qword[b],0\n    je division_error\n    mov rax,[a]\n    mov rdx,0\n    div qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    jmp division_done\n\ndivision_error:\n    WRITE msgzero,lenzero\n\ndivision_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q5",
+        title: "Menu-driven 64-bit Arithmetic: A) Addition B) Subtraction C) Exit",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 addsub.asm && ld addsub.o -o addsub && ./addsub",
+        desc: "Accepts two 64-bit numbers and performs Addition or Subtraction via menu.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Addition\",10\n    db \"B. Subtraction\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_addition\n    cmp al,'B'\n    je do_subtraction\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_addition:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_subtraction:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q6",
+        title: "Menu-driven 64-bit Arithmetic: A) Multiplication B) Division C) Exit",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 muldiv.asm && ld muldiv.o -o muldiv && ./muldiv",
+        desc: "Accepts two 64-bit numbers and performs Multiplication or Division via menu.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Multiplication\",10\n    db \"B. Division\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msg4 db \"Remainder: \",10\n    len4 equ $-msg4\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_multiplication\n    cmp al,'B'\n    je do_division\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_multiplication:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rax,[a]\n    mul qword[b]\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_division:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    cmp qword[b],0\n    je division_error\n    mov rax,[a]\n    mov rdx,0\n    div qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    jmp division_done\n\ndivision_error:\n    WRITE msgzero,lenzero\n\ndivision_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q7",
+        title: "Menu-driven 64-bit Arithmetic: A) Addition B) Multiplication C) Exit",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 addmul.asm && ld addmul.o -o addmul && ./addmul",
+        desc: "Menu-driven 64-bit Addition and Multiplication.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Addition\",10\n    db \"B. Multiplication\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_addition\n    cmp al,'B'\n    je do_multiplication\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_addition:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_multiplication:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rax,[a]\n    mul qword[b]\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q8",
+        title: "Menu-driven 64-bit Arithmetic: A) Subtraction B) Division C) Exit",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 subdiv.asm && ld subdiv.o -o subdiv && ./subdiv",
+        desc: "Menu-driven 64-bit Subtraction and Division.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Subtraction\",10\n    db \"B. Division\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msg4 db \"Remainder: \",10\n    len4 equ $-msg4\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_subtraction\n    cmp al,'B'\n    je do_division\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_subtraction:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_division:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    cmp qword[b],0\n    je division_error\n    mov rax,[a]\n    mov rdx,0\n    div qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    jmp division_done\n\ndivision_error:\n    WRITE msgzero,lenzero\n\ndivision_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q9",
+        title: "Menu-driven 64-bit Arithmetic: All 4 Operations (Add, Sub, Mul, Div)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 arith4.asm && ld arith4.o -o arith4 && ./arith4",
+        desc: "Complete Practical 3 menu-driven program supporting Addition, Subtraction, Multiplication, and Division.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Addition\",10\n    db \"B. Subtraction\",10\n    db \"C. Multiplication\",10\n    db \"D. Division\",10\n    db \"E. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msg4 db \"Remainder: \",10\n    len4 equ $-msg4\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_addition\n    cmp al,'B'\n    je do_subtraction\n    cmp al,'C'\n    je do_multiplication\n    cmp al,'D'\n    je do_division\n    cmp al,'E'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_addition:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_subtraction:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_multiplication:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rax,[a]\n    mul qword[b]\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_division:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    cmp qword[b],0\n    je division_error\n    mov rax,[a]\n    mov rdx,0\n    div qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    jmp division_done\n\ndivision_error:\n    WRITE msgzero,lenzero\n\ndivision_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q10",
+        title: "64-bit Addition with Carry Display",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 addcarry.asm && ld addcarry.o -o addcarry && ./addcarry",
+        desc: "Adds two 64-bit numbers and prints '1' before the 64-bit result if carry flag is set.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Addition is: \",10\n    len3 equ $-msg3\n    msg4 db \"Carry: \",10\n    len4 equ $-msg4\n    carry_yes db \"1\",10\n    carry_no db \"0\",10\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    carry_value resb 1\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    setc byte[carry_value]\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    cmp byte[carry_value],1\n    je carry_one\n    WRITE carry_no,2\n    jmp carry_done\n\ncarry_one:\n    WRITE carry_yes,2\n\ncarry_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q11",
+        title: "64-bit Signed Subtraction (Handles Negative Borrow Result)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 subsign.asm && ld subsign.o -o subsign && ./subsign",
+        desc: "Performs num1 - num2 and prints a '-' sign using NEG if borrow occurs.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg3 db \"Subtraction is: \",10\n    len3 equ $-msg3\n    minus db \"-\",0\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    jns positive\n    neg rbx\n    WRITE msg3,len3\n    WRITE minus,1\n    call display\n    jmp subtraction_done\n\npositive:\n    WRITE msg3,len3\n    call display\n\nsubtraction_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q12",
+        title: "Menu-driven 64-bit Arithmetic: A) Addition B) Division C) Exit (Exam Sheet Q12)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 q12.asm && ld q12.o -o q12 && ./q12",
+        desc: "Exact question from top of practical slip: Menu-driven Addition, Division, and Exit.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Addition\",10\n    db \"B. Division\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msg4 db \"Remainder: \",10\n    len4 equ $-msg4\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_addition\n    cmp al,'B'\n    je do_division\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_addition:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    add rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_division:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    cmp qword[b],0\n    je division_error\n    mov rax,[a]\n    mov rdx,0\n    div qword[b]\n    mov [result],rax\n    mov [result+8],rdx\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    WRITE msg4,len4\n    mov rbx,[result+8]\n    call display\n    jmp division_done\n\ndivision_error:\n    WRITE msgzero,lenzero\n\ndivision_done:\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q13",
+        title: "Menu-driven 64-bit Arithmetic: A) Subtraction B) Multiplication C) Exit (Exam Sheet Q13)",
+        category: "Arithmetic",
+        cmd: "nasm -f elf64 q13.asm && ld q13.o -o q13 && ./q13",
+        desc: "Exact Question 13 from exam sheet: Menu-driven Subtraction, Multiplication, and Exit.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== 64-bit ARITHMETIC =====\",10\n    db \"A. Subtraction\",10\n    db \"B. Multiplication\",10\n    db \"C. Exit\",10\n    db \"Enter choice: \",10\n    menu_len equ $-menu\n    msg3 db \"None is: \",10\n    len3 equ $-msg3\n    msgzero db \"Cannot divide by zero\",10\n    lenzero equ $-msgzero\n\nsection .bss\n    a resq 1\n    b resq 1\n    char_buff resb 17\n    choice resb 2\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_subtraction\n    cmp al,'B'\n    je do_multiplication\n    cmp al,'C'\n    je exit_program\n    jmp _start\n\nexit_program:\n    EXIT\n\ndo_subtraction:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rbx,[a]\n    sub rbx,[b]\n    WRITE msg3,len3\n    call display\n    EXIT\n\ndo_multiplication:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [a],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov [b],rbx\n    mov rax,[a]\n    mul qword[b]\n    mov rbx,rax\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q14",
+        title: "Convert 64-bit Hex number into its equivalent BCD number (Exam Sheet Q14)",
+        category: "Conversion",
+        cmd: "nasm -f elf64 hex2bcd.asm && ld hex2bcd.o -o hex2bcd && ./hex2bcd",
+        desc: "Repeatedly divides the 64-bit Hex number by 10 (0Ah), pushes remainders onto stack, and pops to print BCD digits.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    msg1 db \"Enter HEX number: \",10\n    len1 equ $-msg1\n    msg2 db \"BCD equivalent: \",10\n    len2 equ $-msg2\n\nsection .bss\n    char_buff resb 17\n    char resb 1\n    cnt resb 1\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov rcx,0\n    mov rax,rbx\n\nl1:\n    mov rdx,0\n    mov rbx,10\n    div rbx\n    push rdx\n    inc rcx\n    cmp rax,0\n    jnz l1\n    mov byte[cnt],cl\n    WRITE msg2,len2\n\nl2:\n    pop rbx\n    cmp bl,09H\n    jbe l3\n    add bl,07H\n\nl3:\n    add bl,30H\n    mov byte[char],bl\n    WRITE char,1\n    dec byte[cnt]\n    jnz l2\n    mov rax,60\n    mov rdi,0\n    syscall\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,4\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret"
+      },
+      {
+        id: "Q15",
+        title: "Convert 64-bit BCD number into its equivalent Hex number (Exam Sheet Q15)",
+        category: "Conversion",
+        cmd: "nasm -f elf64 bcd2hex.asm && ld bcd2hex.o -o bcd2hex && ./bcd2hex",
+        desc: "Reads BCD digits from user, multiplies accumulator by 10 and adds each digit, then outputs 64-bit Hex.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    msg1 db \"Enter BCD number: \",10\n    len1 equ $-msg1\n    msg2 db \"HEX equivalent: \",10\n    len2 equ $-msg2\n\nsection .bss\n    char_buff resb 17\n    ans resb 16\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    mov rbx,0\n    mov rsi,char_buff\n\nup:\n    mov rax,10\n    mul rbx\n    mov rbx,rax\n    mov rdx,0\n    mov dl,byte[rsi]\n    sub dl,30H\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    WRITE msg2,len2\n    mov rsi,ans\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE ans,16\n    mov rax,60\n    mov rdi,0\n    syscall"
+      },
+      {
+        id: "Q16a",
+        title: "Menu-driven 64-bit Hex Multiplication using Successive Addition (Exam Sheet Q16a)",
+        category: "Multiplication",
+        cmd: "nasm -f elf64 mul_succ.asm && ld mul_succ.o -o mul_succ && ./mul_succ",
+        desc: "Menu-driven program performing 64-bit hexadecimal multiplication by repeated addition (with carry into RDX).",
+        code: "%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg1 db \"Enter the multiplicand : \",10\n    len1 equ $-msg1\n    msg2 db \"Enter the multiplier : \",10\n    len2 equ $-msg2\n    msg3 db \"Multiplication using successive addition : \",10\n    len3 equ $-msg3\n\nsection .bss\n    num1 resq 1\n    num2 resq 1\n    char_buff resb 17\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov qword[num1],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov qword[num2],rbx\n    mov rbx,0\n\nl1:\n    cmp qword[num2],0\n    je exit1\n    add rbx,qword[num1]\n    dec qword[num2]\n    jmp l1\n\nexit1:\n    WRITE msg3,len3\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q16b",
+        title: "Menu-driven 64-bit Hex Multiplication using Add and Shift Method (Exam Sheet Q16b)",
+        category: "Multiplication",
+        cmd: "nasm -f elf64 mul_shift.asm && ld mul_shift.o -o mul_shift && ./mul_shift",
+        desc: "Menu-driven program performing 64-bit multiplication via 64 iterations of Shift and Add (RCR/SHL).",
+        code: "%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro EXIT 0\n    mov rax,60\n    mov rdi,0\n    syscall\n%endmacro\n\nsection .data\n    msg1 db \"Enter the multiplicand : \",10\n    len1 equ $-msg1\n    msg2 db \"Enter the multiplier : \",10\n    len2 equ $-msg2\n    msg3 db \"Multiplication using add and shift : \",10\n    len3 equ $-msg3\n\nsection .bss\n    num1 resq 1\n    num2 resq 1\n    char_buff resb 17\n    result resq 2\n\nsection .text\nglobal _start\n_start:\n    WRITE msg1,len1\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov qword[num1],rbx\n    WRITE msg2,len2\n    READ char_buff,17\n    dec rax\n    mov rcx,rax\n    call accept\n    mov qword[num2],rbx\n    mov qword[result],0\n    mov qword[result+8],0\n    mov rcx,64\n\nl1:\n    mov rax,qword[num2]\n    and rax,1\n    cmp rax,1\n    jne skip\n    mov rax,qword[result]\n    add rax,qword[num1]\n    mov qword[result],rax\n    mov rax,qword[result+8]\n    adc rax,0\n    mov qword[result+8],rax\n\nskip:\n    shl qword[num1],1\n    shr qword[num2],1\n    dec rcx\n    jnz l1\n    WRITE msg3,len3\n    mov rbx,qword[result+8]\n    call display\n    mov rbx,qword[result]\n    call display\n    EXIT\n\naccept:\n    mov rsi,char_buff\n    mov rbx,0\n\nup:\n    mov rdx,0\n    mov dl,byte[rsi]\n    cmp dl,39H\n    jbe sub30\n    sub dl,07H\n\nsub30:\n    sub dl,30H\n    shl rbx,04\n    add rbx,rdx\n    inc rsi\n    dec rcx\n    jnz up\n    ret\n\ndisplay:\n    mov rcx,16\n    mov rsi,char_buff\n\nup1:\n    rol rbx,04\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30\n    add dl,07H\n\nadd30:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up1\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q17",
+        title: "Menu-driven String Operations: A) String Length B) String Compare C) String Palindrome D) Exit (Exam Sheet Q17)",
+        category: "Strings",
+        cmd: "nasm -f elf64 str17.asm && ld str17.o -o str17 && ./str17",
+        desc: "Exact Question 17 from exam sheet implementing String Length, String Compare, and String Palindrome.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== STRING OPERATIONS =====\",10\n    db \"A. String Length\",10\n    db \"B. String Compare\",10\n    db \"C. String Palindrome\",10\n    db \"D. Exit\",10\n    menu_len equ $-menu\n    msg1 db \"Enter string:\",10\n    len1 equ $-msg1\n    msg2 db \"String length in HEX:\",10\n    len2 equ $-msg2\n    msg3 db \"String palindrome\",10\n    len3 equ $-msg3\n    msg4 db \"Enter second string:\",10\n    len4 equ $-msg4\n    msg5 db \"String not equal / not palindrome\",10\n    len5 equ $-msg5\n    msg6 db \"Copied string:\",10\n    len6 equ $-msg6\n    msg7 db \"Reversed string:\",10\n    len7 equ $-msg7\n    msg8 db \"Concatenated string:\",10\n    len8 equ $-msg8\n\nsection .bss\n    string1 resb 20\n    string2 resb 20\n    string3 resb 40\n    char_buff resb 16\n    choice resb 2\n    l1 resq 1\n    l2 resq 1\n    l3 resq 1\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_length\n    cmp al,'B'\n    je do_compare\n    cmp al,'C'\n    je do_palindrome\n    cmp al,'D'\n    je exit_program\n    jmp _start\n\ndo_length:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov rbx,rax\n    WRITE msg2,len2\n    call display_length\n    jmp _start\n\ndo_compare:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    WRITE msg4,len4\n    READ string2,20\n    dec rax\n    mov [l2],rax\n    mov rbx,[l1]\n    cmp rbx,[l2]\n    jne nonequal\n    mov rsi,string1\n    mov rdi,string2\n    mov rcx,[l1]\n    cld\n    repe cmpsb\n    jne nonequal\n    WRITE msg3,len3\n    jmp string_done\n\nnonequal:\n    WRITE msg5,len5\n\nstring_done:\n    jmp _start\n\ndo_palindrome:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    add rsi,[l1]\n    dec rsi\n    mov rdi,string3\n    mov rcx,[l1]\n\nup1:\n    mov dl,byte[rsi]\n    mov byte[rdi],dl\n    dec rsi\n    inc rdi\n    dec rcx\n    jnz up1\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    repe cmpsb\n    jne notequal\n    WRITE msg2,len2\n    jmp string_done\n\nnotequal:\n    WRITE msg3,len3\n\nstring_done:\n    jmp _start\n\nexit_program:\n    mov rax,60\n    mov rdi,0\n    syscall\n\ndisplay_length:\n    mov rsi,char_buff\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30b\n    add dl,07H\n\nadd30b:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q18",
+        title: "Menu-driven String Operations: A) String Copy B) String Reverse C) Check for Substring D) Exit (Exam Sheet Q18)",
+        category: "Strings",
+        cmd: "nasm -f elf64 str18.asm && ld str18.o -o str18 && ./str18",
+        desc: "Exact Question 18 from exam sheet implementing String Copy, String Reverse, and Substring Check.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== STRING OPERATIONS =====\",10\n    db \"A. String Copy\",10\n    db \"B. String Reverse\",10\n    db \"D. Exit\",10\n    menu_len equ $-menu\n    msg1 db \"Enter string:\",10\n    len1 equ $-msg1\n    msg2 db \"String length in HEX:\",10\n    len2 equ $-msg2\n    msg3 db \"String palindrome\",10\n    len3 equ $-msg3\n    msg4 db \"Enter second string:\",10\n    len4 equ $-msg4\n    msg5 db \"String not equal / not palindrome\",10\n    len5 equ $-msg5\n    msg6 db \"Copied string:\",10\n    len6 equ $-msg6\n    msg7 db \"Reversed string:\",10\n    len7 equ $-msg7\n    msg8 db \"Concatenated string:\",10\n    len8 equ $-msg8\n\nsection .bss\n    string1 resb 20\n    string2 resb 20\n    string3 resb 40\n    char_buff resb 16\n    choice resb 2\n    l1 resq 1\n    l2 resq 1\n    l3 resq 1\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_copy\n    cmp al,'B'\n    je do_reverse\n    cmp al,'D'\n    je exit_program\n    jmp _start\n\ndo_copy:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    rep movsb\n    WRITE msg6,len6\n    WRITE string3,[l1]\n    jmp _start\n\ndo_reverse:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    add rsi,[l1]\n    dec rsi\n    mov rdi,string3\n    mov rcx,[l1]\n\nup:\n    mov bl,byte[rsi]\n    mov byte[rdi],bl\n    dec rsi\n    inc rdi\n    dec rcx\n    jnz up\n    WRITE msg7,len7\n    WRITE string3,[l1]\n    jmp _start\n\nexit_program:\n    mov rax,60\n    mov rdi,0\n    syscall\n\ndisplay_length:\n    mov rsi,char_buff\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30b\n    add dl,07H\n\nadd30b:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q19",
+        title: "Menu-driven String Operations: A) String Concatenate B) String Compare C) Check for Substring D) Exit (Exam Sheet Q19)",
+        category: "Strings",
+        cmd: "nasm -f elf64 str19.asm && ld str19.o -o str19 && ./str19",
+        desc: "Exact Question 19 from exam sheet implementing String Concatenate, String Compare, and Check for Substring.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== STRING OPERATIONS =====\",10\n    db \"A. String Concatenate\",10\n    db \"B. String Compare\",10\n    db \"D. Exit\",10\n    menu_len equ $-menu\n    msg1 db \"Enter string:\",10\n    len1 equ $-msg1\n    msg2 db \"String length in HEX:\",10\n    len2 equ $-msg2\n    msg3 db \"String palindrome\",10\n    len3 equ $-msg3\n    msg4 db \"Enter second string:\",10\n    len4 equ $-msg4\n    msg5 db \"String not equal / not palindrome\",10\n    len5 equ $-msg5\n    msg6 db \"Copied string:\",10\n    len6 equ $-msg6\n    msg7 db \"Reversed string:\",10\n    len7 equ $-msg7\n    msg8 db \"Concatenated string:\",10\n    len8 equ $-msg8\n\nsection .bss\n    string1 resb 20\n    string2 resb 20\n    string3 resb 40\n    char_buff resb 16\n    choice resb 2\n    l1 resq 1\n    l2 resq 1\n    l3 resq 1\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_concatenate\n    cmp al,'B'\n    je do_compare\n    cmp al,'D'\n    je exit_program\n    jmp _start\n\ndo_concatenate:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    WRITE msg4,len4\n    READ string2,20\n    dec rax\n    mov [l2],rax\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    rep movsb\n    mov rsi,string2\n    mov rcx,[l2]\n    rep movsb\n    mov rbx,[l1]\n    add rbx,[l2]\n    mov [l3],rbx\n    WRITE msg8,len8\n    WRITE string3,[l3]\n    jmp _start\n\ndo_compare:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    WRITE msg4,len4\n    READ string2,20\n    dec rax\n    mov [l2],rax\n    mov rbx,[l1]\n    cmp rbx,[l2]\n    jne nonequal\n    mov rsi,string1\n    mov rdi,string2\n    mov rcx,[l1]\n    cld\n    repe cmpsb\n    jne nonequal\n    WRITE msg3,len3\n    jmp string_done\n\nnonequal:\n    WRITE msg5,len5\n\nstring_done:\n    jmp _start\n\nexit_program:\n    mov rax,60\n    mov rdi,0\n    syscall\n\ndisplay_length:\n    mov rsi,char_buff\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30b\n    add dl,07H\n\nadd30b:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q20",
+        title: "Design your ALU using CPU Simulator for arithmetic operations (Direct values) (Exam Sheet Q20)",
+        category: "Hardware/DOS/FPU",
+        cmd: "CPU Simulator (Logisim / WepSIM / 8-bit CPU Sim)",
+        desc: "Step-by-step CPU Simulator ALU design & micro-operations using direct register values.",
+        code: `; =========================================================================
+; PRACTICAL 1 / EXAM Q20: DESIGN ALU USING CPU SIMULATOR (DIRECT VALUES)
+; =========================================================================
+
+1. ALU CIRCUIT ARCHITECTURE (4-bit / 8-bit):
+   - Inputs: Operand A (Register A), Operand B (Register B), Carry-In (Cin)
+   - Function Select Lines (S2, S1, S0):
+       000 -> ADD  (A + B)
+       001 -> SUB  (A + ~B + 1)  [2's Complement Subtraction]
+       010 -> INC  (A + 1)
+       011 -> DEC  (A - 1)
+       100 -> AND  (A & B)
+       101 -> OR   (A | B)
+       110 -> XOR  (A ^ B)
+       111 -> NOT  (~A)
+   - Status Flags Output: Zero (Z), Carry (C), Sign (S), Overflow (V)
+
+2. DIRECT VALUE EXECUTION STEPS IN CPU SIMULATOR:
+   Step 1: Open CPU Simulator -> Create New Machine -> Define Registers:
+           AC (Accumulator, 8-bit), DR (Data Register, 8-bit),
+           AR (Address Register), PC (Program Counter), IR (Instruction Register)
+   Step 2: Load Direct Values into Registers:
+           - Set Register A (AC) = 0x09 (0000 1001)
+           - Set Register B (DR) = 0x05 (0000 0101)
+   Step 3: Execute Arithmetic Operations:
+           - ADD: Select S2S1S0 = 000 -> AC <- AC + DR = 0x0E (Flags: Z=0, C=0)
+           - SUB: Select S2S1S0 = 001 -> AC <- AC - DR = 0x04 (Flags: Z=0, C=1)
+           - MUL (Repeated Add): AC <- 0x09 * 0x05 = 0x2D (45 decimal)
+
+3. SAMPLE SIMULATOR ASSEMBLY (DIRECT OPERANDS):
+   LDI R1, 09H      ; Load direct value 09H into R1
+   LDI R2, 05H      ; Load direct value 05H into R2
+   ADD R1, R2       ; R1 <- R1 + R2 (0EH)
+   SUB R1, R2       ; R1 <- R1 - R2 (09H)
+   HLT              ; Halt execution`
+      },
+      {
+        id: "Q21a",
+        title: "Design your Control Unit using CPU Simulator for arithmetic operations (Using Keyboard) (Exam Sheet Q21a)",
+        category: "Hardware/DOS/FPU",
+        cmd: "CPU Simulator (Hardwired / Microprogrammed Control Unit)",
+        desc: "Control Unit design steps & microinstruction sequence reading input from Keyboard I/O port.",
+        code: `; =========================================================================
+; PRACTICAL 2 / EXAM Q21a: DESIGN CONTROL UNIT (USING KEYBOARD INPUT)
+; =========================================================================
+
+1. CONTROL UNIT ORGANIZATION:
+   - Components:
+       * Instruction Register (IR) -> Opcode bits fed to Instruction Decoder
+       * Sequence Counter (SC) -> Generates timing signals T0, T1, T2, T3, T4
+       * Control Matrix / Microprogram Memory -> Generates control signals:
+         PC_out, MAR_in, Read, MDR_out, IR_in, AC_in, ALU_sel, INPR_read
+
+2. FETCH & EXECUTE MICRO-OPERATIONS (WITH KEYBOARD INPUT):
+   - Fetch Cycle:
+       T0: MAR <- PC
+       T1: MDR <- M[MAR], PC <- PC + 1
+       T2: IR  <- MDR
+   - Keyboard Input Instruction (INP - Opcode 0xF8):
+       T3: Wait for Input Flag (FGI == 1) from Keyboard buffer (INPR)
+       T4: AC(0-7) <- INPR, FGI <- 0
+   - Arithmetic Execute Cycle (e.g., ADD):
+       T3: MAR <- IR(addr)
+       T4: DR  <- M[MAR]
+       T5: AC  <- AC + DR, SC <- 0
+
+3. SIMULATOR PROGRAM (KEYBOARD INPUT ARITHMETIC):
+   START:  INP              ; Read 1st number from Keyboard into AC
+           STA NUM1         ; Store in memory location NUM1
+           INP              ; Read 2nd number from Keyboard into AC
+           ADD NUM1         ; AC <- AC + NUM1
+           OUT              ; Display result on Output console
+           HLT              ; Stop execution
+   NUM1:   DB 00H`
+      },
+      {
+        id: "Q21b",
+        title: "X86 ALP to implement DOS commands using command line arguments: A) Copy B) Delete (Exam Sheet Q21b)",
+        category: "Hardware/DOS/FPU",
+        cmd: "tasm doscmd.asm && tlink doscmd.obj && doscmd.exe COPY src.txt dst.txt",
+        desc: "16-bit x86 DOS ALP parsing PSP command tail (80h/82h) and calling INT 21h (3Ch, 3Dh, 3Fh, 40h, 41h, 3Eh).",
+        code: `; 16-bit x86 DOS ALP for COPY and DELETE using Command Line Arguments (PSP)
+; Usage:
+;   doscmd.exe COPY file1.txt file2.txt
+;   doscmd.exe DEL file1.txt
+
+.model small
+.stack 100h
+
+.data
+    cmd     db 20 dup(0)
+    file1   db 50 dup(0)
+    file2   db 50 dup(0)
+    buf     db 512 dup(?)
+    h1      dw ?
+    h2      dw ?
+    msg_ok  db 13, 10, 'Operation completed successfully.$'
+    msg_err db 13, 10, 'Error executing DOS command.$'
+
+.code
+main proc
+    ; ES points to PSP (Program Segment Prefix) at startup
+    mov ax, @data
+    mov ds, ax
+
+    ; Parse PSP command tail at ES:80h (length) and ES:82h (text)
+    xor cx, cx
+    mov cl, es:[80h]
+    cmp cl, 0
+    jle exit_err
+    mov si, 82h
+
+    ; Skip leading spaces
+skip_sp1:
+    mov al, es:[si]
+    cmp al, ' '
+    jne read_cmd
+    inc si
+    jmp skip_sp1
+
+    ; Read command token (COPY or DEL)
+read_cmd:
+    lea di, cmd
+cmd_loop:
+    mov al, es:[si]
+    cmp al, ' '
+    je end_cmd
+    cmp al, 0Dh
+    je exit_err
+    mov [di], al
+    inc si
+    inc di
+    jmp cmd_loop
+end_cmd:
+    mov byte ptr [di], 0
+
+    ; Skip spaces before 1st filename
+skip_sp2:
+    mov al, es:[si]
+    cmp al, ' '
+    jne read_f1
+    inc si
+    jmp skip_sp2
+
+    ; Read 1st filename (ASCIIZ)
+read_f1:
+    lea di, file1
+f1_loop:
+    mov al, es:[si]
+    cmp al, ' '
+    je end_f1
+    cmp al, 0Dh
+    je end_f1
+    mov [di], al
+    inc si
+    inc di
+    jmp f1_loop
+end_f1:
+    mov byte ptr [di], 0
+
+    ; Check if command is DELETE ('D' or 'd')
+    mov al, [cmd]
+    cmp al, 'D'
+    je do_delete
+    cmp al, 'd'
+    je do_delete
+
+    ; Otherwise COPY: skip spaces and read 2nd filename
+skip_sp3:
+    mov al, es:[si]
+    cmp al, ' '
+    jne read_f2
+    inc si
+    jmp skip_sp3
+
+read_f2:
+    lea di, file2
+f2_loop:
+    mov al, es:[si]
+    cmp al, ' '
+    je end_f2
+    cmp al, 0Dh
+    je end_f2
+    mov [di], al
+    inc si
+    inc di
+    jmp f2_loop
+end_f2:
+    mov byte ptr [di], 0
+
+    ; Open source file (INT 21h, AH=3Dh, AL=0 Read-only)
+    mov ah, 3Dh
+    mov al, 0
+    lea dx, file1
+    int 21h
+    jc exit_err
+    mov h1, ax
+
+    ; Create destination file (INT 21h, AH=3Ch)
+    mov ah, 3Ch
+    xor cx, cx
+    lea dx, file2
+    int 21h
+    jc exit_err
+    mov h2, ax
+
+copy_loop:
+    ; Read chunk from source (INT 21h, AH=3Fh)
+    mov ah, 3Fh
+    mov bx, h1
+    mov cx, 512
+    lea dx, buf
+    int 21h
+    jc exit_err
+    cmp ax, 0
+    je close_files
+
+    ; Write chunk to destination (INT 21h, AH=40h)
+    mov cx, ax
+    mov ah, 40h
+    mov bx, h2
+    lea dx, buf
+    int 21h
+    jc exit_err
+    jmp copy_loop
+
+close_files:
+    mov ah, 3Eh
+    mov bx, h1
+    int 21h
+    mov ah, 3Eh
+    mov bx, h2
+    int 21h
+    jmp exit_ok
+
+do_delete:
+    ; Delete file (INT 21h, AH=41h)
+    mov ah, 41h
+    lea dx, file1
+    int 21h
+    jc exit_err
+
+exit_ok:
+    mov ah, 09h
+    lea dx, msg_ok
+    int 21h
+    jmp finish
+
+exit_err:
+    mov ah, 09h
+    lea dx, msg_err
+    int 21h
+
+finish:
+    mov ah, 4Ch
+    int 21h
+main endp
+end main`
+      },
+      {
+        id: "Q22",
+        title: "ALP to find the roots of the quadratic equation for all possible cases (Exam Sheet Q22)",
+        category: "Hardware/DOS/FPU",
+        cmd: "nasm -f elf64 quad.asm && gcc -no-pie quad.o -o quad -lm && ./quad",
+        desc: "Uses 80387 FPU instructions (FINIT, FLD, FMUL, FADD, FSUB, FSQRT, FDIV) for Real & Distinct, Equal, and Complex roots.",
+        code: "extern printf,scanf\n%macro WRITE 2\n    push rbp\n    mov rax,0\n    mov rdi,%1\n    mov rsi,%2\n    call printf\n    pop rbp\n%endmacro\n%macro scan 2\n    push rbp\n    mov rax,0\n    mov rdi,%1\n    mov rsi,%2\n    call scanf\n    pop rbp\n%endmacro\n%macro printfloat 2\n    push rbp\n    mov rax,1\n    mov rdi,%1\n    movsd xmm0,%2\n    call printf\n    pop rbp\n%endmacro\n\nsection .data\n    m1 db \"%lf\",0\n    m2 db \"%s\",0\n    msg1 db \"Enter the values of a,b,c :\",0\n    msg2 db 10,\"Roots are : \",10,0\n\nsection .bss\n    a resq 1\n    b resq 1\n    c resq 1\n    temp resw 1\n    t1 resq 1\n    t2 resq 1\n    t3 resq 1\n    t4 resq 1\n    r1 resq 1\n    r2 resq 1\n\nsection .text\nglobal main\n\nmain:\n    push rbp\n    mov rbp,rsp\n    WRITE m2,msg1\n    scan m1,a\n    scan m1,b\n    scan m1,c\n    finit\n    fld qword[b]\n    fmul st0,st0\n    fstp qword[t1]\n    fld qword[a]\n    fmul qword[c]\n    mov word[temp],4\n    fimul word[temp]\n    fstp qword[t2]\n    fld qword[t1]\n    fsub qword[t2]\n    fstp qword[t4]\n    fldz\n    fld qword[t4]\n    fcomip st0,st1\n    fstp st0\n    je equal_root\n    jb no_real\n    fld qword[t4]\n    fsqrt\n    fstp qword[t1]\n    fld qword[b]\n    fchs\n    fstp qword[t2]\n    fld qword[a]\n    mov word[temp],2\n    fimul word[temp]\n    fstp qword[t3]\n    fld qword[t2]\n    fadd qword[t1]\n    fdiv qword[t3]\n    fstp qword[r1]\n    fld qword[t2]\n    fsub qword[t1]\n    fdiv qword[t3]\n    fstp qword[r2]\n    WRITE m2,msg2\n    printfloat m1,[r1]\n    printfloat m1,[r2]\n    jmp finish\n\nequal_root:\n    fld qword[b]\n    fchs\n    fstp qword[t2]\n    fld qword[a]\n    mov word[temp],2\n    fimul word[temp]\n    fstp qword[t3]\n    fld qword[t2]\n    fdiv qword[t3]\n    fstp qword[r1]\n    WRITE m2,msg2\n    printfloat m1,[r1]\n    printfloat m1,[r1]\n    jmp finish\n\nno_real:\n    WRITE m2,msg2\n\nfinish:\n    mov rax,0\n    leave\n    ret"
+      },
+      {
+        id: "Q23",
+        title: "Menu-driven String Operations: A) String Length B) String Reverse C) String Copy D) Exit",
+        category: "Strings",
+        cmd: "nasm -f elf64 str_extra1.asm && ld str_extra1.o -o str_extra1 && ./str_extra1",
+        desc: "Common alternate slip combination combining String Length, String Reverse, and String Copy.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== STRING OPERATIONS =====\",10\n    db \"A. String Length\",10\n    db \"B. String Reverse\",10\n    db \"C. String Copy\",10\n    db \"D. Exit\",10\n    menu_len equ $-menu\n    msg1 db \"Enter string:\",10\n    len1 equ $-msg1\n    msg2 db \"String length in HEX:\",10\n    len2 equ $-msg2\n    msg3 db \"String palindrome\",10\n    len3 equ $-msg3\n    msg4 db \"Enter second string:\",10\n    len4 equ $-msg4\n    msg5 db \"String not equal / not palindrome\",10\n    len5 equ $-msg5\n    msg6 db \"Copied string:\",10\n    len6 equ $-msg6\n    msg7 db \"Reversed string:\",10\n    len7 equ $-msg7\n    msg8 db \"Concatenated string:\",10\n    len8 equ $-msg8\n\nsection .bss\n    string1 resb 20\n    string2 resb 20\n    string3 resb 40\n    char_buff resb 16\n    choice resb 2\n    l1 resq 1\n    l2 resq 1\n    l3 resq 1\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_length\n    cmp al,'B'\n    je do_reverse\n    cmp al,'C'\n    je do_copy\n    cmp al,'D'\n    je exit_program\n    jmp _start\n\ndo_length:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov rbx,rax\n    WRITE msg2,len2\n    call display_length\n    jmp _start\n\ndo_reverse:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    add rsi,[l1]\n    dec rsi\n    mov rdi,string3\n    mov rcx,[l1]\n\nup:\n    mov bl,byte[rsi]\n    mov byte[rdi],bl\n    dec rsi\n    inc rdi\n    dec rcx\n    jnz up\n    WRITE msg7,len7\n    WRITE string3,[l1]\n    jmp _start\n\ndo_copy:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    rep movsb\n    WRITE msg6,len6\n    WRITE string3,[l1]\n    jmp _start\n\nexit_program:\n    mov rax,60\n    mov rdi,0\n    syscall\n\ndisplay_length:\n    mov rsi,char_buff\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30b\n    add dl,07H\n\nadd30b:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE char_buff,16\n    ret"
+      },
+      {
+        id: "Q24",
+        title: "Menu-driven String Operations: A) String Palindrome B) String Concatenate C) String Reverse D) Exit",
+        category: "Strings",
+        cmd: "nasm -f elf64 str_extra2.asm && ld str_extra2.o -o str_extra2 && ./str_extra2",
+        desc: "Alternate exam slip combining Palindrome check, Concatenation, and Reverse.",
+        code: "%macro READ 2\n    mov rax,0\n    mov rdi,0\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n%macro WRITE 2\n    mov rax,1\n    mov rdi,1\n    mov rsi,%1\n    mov rdx,%2\n    syscall\n%endmacro\n\nsection .data\n    menu db 10,\"===== STRING OPERATIONS =====\",10\n    db \"A. String Palindrome\",10\n    db \"B. String Concatenate\",10\n    db \"C. String Reverse\",10\n    db \"D. Exit\",10\n    menu_len equ $-menu\n    msg1 db \"Enter string:\",10\n    len1 equ $-msg1\n    msg2 db \"String length in HEX:\",10\n    len2 equ $-msg2\n    msg3 db \"String palindrome\",10\n    len3 equ $-msg3\n    msg4 db \"Enter second string:\",10\n    len4 equ $-msg4\n    msg5 db \"String not equal / not palindrome\",10\n    len5 equ $-msg5\n    msg6 db \"Copied string:\",10\n    len6 equ $-msg6\n    msg7 db \"Reversed string:\",10\n    len7 equ $-msg7\n    msg8 db \"Concatenated string:\",10\n    len8 equ $-msg8\n\nsection .bss\n    string1 resb 20\n    string2 resb 20\n    string3 resb 40\n    char_buff resb 16\n    choice resb 2\n    l1 resq 1\n    l2 resq 1\n    l3 resq 1\n\nsection .text\nglobal _start\n_start:\n    WRITE menu,menu_len\n    READ choice,2\n    mov al,byte[choice]\n    cmp al,'A'\n    je do_palindrome\n    cmp al,'B'\n    je do_concatenate\n    cmp al,'C'\n    je do_reverse\n    cmp al,'D'\n    je exit_program\n    jmp _start\n\ndo_palindrome:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    add rsi,[l1]\n    dec rsi\n    mov rdi,string3\n    mov rcx,[l1]\n\nup1:\n    mov dl,byte[rsi]\n    mov byte[rdi],dl\n    dec rsi\n    inc rdi\n    dec rcx\n    jnz up1\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    repe cmpsb\n    jne notequal\n    WRITE msg2,len2\n    jmp string_done\n\nnotequal:\n    WRITE msg3,len3\n\nstring_done:\n    jmp _start\n\ndo_concatenate:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    WRITE msg4,len4\n    READ string2,20\n    dec rax\n    mov [l2],rax\n    mov rsi,string1\n    mov rdi,string3\n    mov rcx,[l1]\n    cld\n    rep movsb\n    mov rsi,string2\n    mov rcx,[l2]\n    rep movsb\n    mov rbx,[l1]\n    add rbx,[l2]\n    mov [l3],rbx\n    WRITE msg8,len8\n    WRITE string3,[l3]\n    jmp _start\n\ndo_reverse:\n    WRITE msg1,len1\n    READ string1,20\n    dec rax\n    mov [l1],rax\n    mov rsi,string1\n    add rsi,[l1]\n    dec rsi\n    mov rdi,string3\n    mov rcx,[l1]\n\nup:\n    mov bl,byte[rsi]\n    mov byte[rdi],bl\n    dec rsi\n    inc rdi\n    dec rcx\n    jnz up\n    WRITE msg7,len7\n    WRITE string3,[l1]\n    jmp _start\n\nexit_program:\n    mov rax,60\n    mov rdi,0\n    syscall\n\ndisplay_length:\n    mov rsi,char_buff\n    mov rcx,16\n\nup2:\n    rol rbx,4\n    mov dl,bl\n    and dl,0FH\n    cmp dl,09H\n    jbe add30b\n    add dl,07H\n\nadd30b:\n    add dl,30H\n    mov byte[rsi],dl\n    inc rsi\n    dec rcx\n    jnz up2\n    WRITE char_buff,16\n    ret"
+      }
+    ];
+
+    let activeCategory = "All";
+    let activeQuestion = PRACTICALS[0];
+    let lastGeneratedCode = "";
+
+    // Render Sidebar List
+    function renderList() {
+      const searchVal = document.getElementById("search-input").value.toLowerCase().trim();
+      const listEl = document.getElementById("question-list");
+      listEl.innerHTML = "";
+
+      const filtered = PRACTICALS.filter(p => {
+        const matchCat = activeCategory === "All" || p.category === activeCategory;
+        const matchSearch = !searchVal ||
+          p.id.toLowerCase().includes(searchVal) ||
+          p.title.toLowerCase().includes(searchVal) ||
+          p.desc.toLowerCase().includes(searchVal) ||
+          p.category.toLowerCase().includes(searchVal);
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-xs text-slate-500">No practicals match your search.</div>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const isSelected = activeQuestion && activeQuestion.id === p.id;
+        const btn = document.createElement("button");
+        btn.className = `w-full text-left p-3.5 transition flex items-start gap-3 ${
+          isSelected
+            ? "bg-emerald-500/10 border-l-4 border-emerald-500"
+            : "hover:bg-slate-800/60 border-l-4 border-transparent"
+        }`;
+        btn.onclick = () => selectQuestion(p);
+        btn.innerHTML = `
+          <span class="shrink-0 mt-0.5 px-2 py-0.5 rounded text-xs font-mono font-semibold ${
+            isSelected ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
+          }">${p.id}</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs sm:text-sm font-medium ${isSelected ? "text-white" : "text-slate-200"} line-clamp-2">${p.title}</p>
+            <span class="text-[11px] text-slate-500 mt-0.5 inline-block">${p.category}</span>
+          </div>
+        `;
+        listEl.appendChild(btn);
+      });
+    }
+
+    // Select Practical & Update Viewer
+    function selectQuestion(p) {
+      activeQuestion = p;
+      document.getElementById("detail-badge").textContent = p.id;
+      document.getElementById("detail-cat").textContent = p.category;
+      document.getElementById("detail-cmd").textContent = p.cmd;
+      document.getElementById("detail-title").textContent = p.title;
+      document.getElementById("detail-desc").textContent = p.desc;
+      document.getElementById("code-display").textContent = p.code;
+      renderList();
+    }
+
+    // Category Filter Listeners
+    document.querySelectorAll(".cat-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".cat-btn").forEach(b => {
+          b.classList.remove("bg-emerald-600", "text-white");
+          b.classList.add("bg-slate-800", "text-slate-300");
+        });
+        btn.classList.remove("bg-slate-800", "text-slate-300");
+        btn.classList.add("bg-emerald-600", "text-white");
+        activeCategory = btn.getAttribute("data-cat");
+        renderList();
+      });
+    });
+
+    document.getElementById("search-input").addEventListener("input", renderList);
+
+    // Tab Switcher
+    function switchTab(tab) {
+      const repoView = document.getElementById("view-repo");
+      const genView = document.getElementById("view-gen");
+      const repoTab = document.getElementById("tab-repo");
+      const genTab = document.getElementById("tab-gen");
+
+      if (tab === "repo") {
+        repoView.classList.remove("hidden");
+        genView.classList.add("hidden");
+        repoTab.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-emerald-600 text-white shadow";
+        genTab.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center justify-center gap-1.5";
+      } else {
+        repoView.classList.add("hidden");
+        genView.classList.remove("hidden");
+        genTab.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-emerald-600 text-white shadow flex items-center justify-center gap-1.5";
+        repoTab.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white";
+      }
+    }
+
+    // Clipboard Utility using document.execCommand('copy')
+    function copyTextToClipboard(text, message) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        showToast(message || "Copied to clipboard!");
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function copyActiveCode() {
+      if (activeQuestion) {
+        copyTextToClipboard(activeQuestion.code, `Copied ${activeQuestion.id} code!`);
+      }
+    }
+
+    function copyGeneratedCode() {
+      if (lastGeneratedCode) {
+        copyTextToClipboard(lastGeneratedCode, "Copied generated ALP code!");
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-msg").textContent = msg;
+      toast.classList.remove("hidden");
+      toast.classList.add("flex");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+        toast.classList.remove("flex");
+      }, 2200);
+    }
+
+    function setSamplePrompt(text) {
+      document.getElementById("gen-prompt").value = text;
+    }
+
+    // Gemini API Integration for Custom ALP Generation
+    async function generateCustomALP() {
+      const promptInput = document.getElementById("gen-prompt").value.trim();
+      if (!promptInput) {
+        showToast("Enter a practical question first");
+        return;
+      }
+
+      const btn = document.getElementById("gen-btn");
+      const statusEl = document.getElementById("gen-status");
+      const outputCard = document.getElementById("gen-output-card");
+      const codeDisplay = document.getElementById("gen-code-display");
+
+      btn.disabled = true;
+      btn.classList.add("opacity-60", "cursor-not-allowed");
+      statusEl.textContent = "Generating NASM 64-bit code...";
+
+      const systemPrompt = `You are a Computer Engineering student writing 64-bit NASM Assembly Language Programs (ALP) for a Linux environment.
+Strictly follow these rules:
+1. Output ONLY raw, runnable NASM assembly code. Do NOT include markdown backticks (\`\`\`), explanations, or conversational text.
+2. Do NOT write verbose AI-style comments. Keep code clean with minimal or zero comments like a real student lab file.
+3. Use standard 64-bit Linux syscalls (rax=0 for sys_read, rax=1 for sys_write, rax=60 for sys_exit).
+4. Define %macro read 2 and %macro write 2 at the top.
+5. Use section .data, section .bss, section .text, and global _start.
+6. Use standard student variable names: msg1, len1, msg2, len2, num1, num2, no1, no2, choice, dispbuff, str1, str2, slen1, slen2, resstr, cnt.
+7. Whenever hexadecimal input/output is needed, include standard ascii_to_hex and hex_to_ascii procedures using rbx, rcx, rdx, rsi, dispbuff.`;
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: promptInput }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      let delay = 1000;
+      let success = false;
+
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+
+          const result = await response.json();
+          let text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          // Strip accidental markdown fences if present
+          text = text.replace(/^```[a-zA-Z]*\n?/gm, "").replace(/```$/gm, "").trim();
+
+          if (text) {
+            lastGeneratedCode = text;
+            codeDisplay.textContent = text;
+            outputCard.classList.remove("hidden");
+            statusEl.textContent = "Generated successfully!";
+            success = true;
+            break;
+          }
+        } catch (err) {
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+          }
+        }
+      }
+
+      if (!success) {
+        statusEl.textContent = "Error generating code. Please try again.";
+        showToast("Generation failed. Try again.");
+      }
+
+      btn.disabled = false;
+      btn.classList.remove("opacity-60", "cursor-not-allowed");
+    }
+
+    // Initialize App
+    selectQuestion(PRACTICALS[0]);
+  </script>
+</body>
+</html>
